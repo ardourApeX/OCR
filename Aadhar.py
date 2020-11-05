@@ -3,8 +3,10 @@ import re
 import cv2 as cv
 import keras_ocr
 from pathlib import Path
+import matplotlib.pyplot as plt
+import os
 
-
+Count = 1
 def File_Names(path = "./images"):
 	'''This function is to store the path of all images preset in the directed path'''
 
@@ -31,14 +33,15 @@ def CreateFolder():
 		# If folder is there, pass then
 		pass
 
-def ApplyPatch(aadhar, prediction):
+def ApplyPatch(aadhar, prediction, color_img):
 	# To store coordinates where we need to draw the white patches
+	global Count
 	rectangle = {
 	    1:[],
 	    2:[]
 	}
 
-	#CreateFolder() # Creating Folder to Store Images
+	CreateFolder() # Creating Folder to Store Images
 
 
 	# Checking over consequtive numbers 
@@ -55,8 +58,9 @@ def ApplyPatch(aadhar, prediction):
 	    for x in rectangle[i]:
 	        color_img = cv.rectangle(color_img, tuple(x[0]), tuple(x[1]), color = (255, 255, 255), thickness = -1)
 
-	cv.imshow("image", color_img)
-	cv.waitKey(1000)
+	color_img = cv.cvtColor(color_img, cv.COLOR_BGR2RGB)
+	plt.imsave("Converted Images/Converted"+str(Count)+".png", color_img)
+	Count += 1
 
 def OCR(images):
 
@@ -76,7 +80,7 @@ def OCR(images):
 			file.write(str(aadhar) + "\n")
 
 
-			ApplyPatch(aadhar, prediction)
+			ApplyPatch(aadhar, prediction, image)
 
 		except :
 
